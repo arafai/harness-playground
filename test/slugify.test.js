@@ -9,3 +9,7 @@ test("lower-cases and joins words with a dash", () => {
 test("trims leading and trailing separators", () => {
   assert.equal(slugify("  Hello  "), "hello");
 });
+
+test("collapses runs of separators into one dash", () => {
+  assert.equal(slugify("Hello,  World!"), "hello-world");
+});
