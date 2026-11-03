@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "start": "node src/main.js",
+    "test": "node --test",
+    "reset:acceptance": "node scripts/reset.js"
   },
   "engines": {
     "node": ">=24"
