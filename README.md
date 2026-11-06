@@ -9,5 +9,7 @@ It holds one small function with a known bug and a CI workflow on GitHub-hosted 
 
 - `GET /health`
 - `GET /slug?text=...` returns `{ "slug": "..." }`
-- `GET /items` and `POST /items` with `{ "title": "..." }` keep a list in memory
-- `POST /__reset` clears that list; `npm run reset:acceptance` calls it before each acceptance check
+- `POST /items` with `{ "title": "..." }` saves an item and returns `{ id, title, slug }` with 201. The title is stored exactly as sent. The base slug is `slugify(title)`; if that slug is taken, `-2`, `-3`, ... is appended (`launch-plan`, `launch-plan-2`, ...). A missing, empty, blank or non-string title, a title with no ASCII letters or digits, or malformed JSON returns 400 `{ "error": "..." }`.
+- `GET /items` returns `{ "items": [...] }` in creation order
+- `GET /items/:slug` returns the item with that exact (decoded) slug, or 404 `{ "error": "not found" }`
+- `POST /__reset` clears the list (ids restart at 1); `npm run reset:acceptance` calls it before each acceptance check

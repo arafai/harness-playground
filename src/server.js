@@ -23,13 +23,36 @@ export function createApi() {
     if (req.method === "POST" && url.pathname === "/items") {
       let raw = "";
       for await (const chunk of req) raw += chunk;
-      const title = JSON.parse(raw || "{}").title;
+      let title;
+      try {
+        title = JSON.parse(raw || "{}")?.title;
+      } catch {
+        return send(400, { error: "body must be valid JSON" });
+      }
       if (typeof title !== "string" || title.trim() === "") {
         return send(400, { error: "title is required" });
       }
-      const item = { id: items.length + 1, title, slug: slugify(title) };
+      const baseSlug = slugify(title);
+      if (baseSlug === "") return send(400, { error: "title is required" });
+      const taken = new Set(items.map((item) => item.slug));
+      let slug = baseSlug;
+      for (let n = 2; taken.has(slug); n++) slug = `${baseSlug}-${n}`;
+      const item = { id: items.length + 1, title, slug };
       items = [...items, item];
       return send(201, item);
+    }
+    if (req.method === "GET" && url.pathname.startsWith("/items/")) {
+      const segments = url.pathname.slice("/items/".length).split("/");
+      if (segments.length === 1 && segments[0] !== "") {
+        let slug;
+        try {
+          slug = decodeURIComponent(segments[0]);
+        } catch {
+          return send(404, { error: "not found" });
+        }
+        const found = items.find((item) => item.slug === slug);
+        if (found) return send(200, found);
+      }
     }
     if (req.method === "POST" && url.pathname === "/__reset") {
       items = [];
