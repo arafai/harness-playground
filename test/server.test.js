@@ -39,3 +39,8 @@ test("refuses an item without a title", async () => {
   const res = await fetch(`${base}/items`, { method: "POST", body: "{}" });
   assert.equal(res.status, 400);
 });
+
+test("previews a slug collapsing punctuation runs", async () => {
+  const res = await fetch(`${base}/slug?text=Hello,%20%20World!`);
+  assert.deepEqual(await res.json(), { slug: "hello-world" });
+});
