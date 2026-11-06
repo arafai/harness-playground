@@ -1,0 +1,7 @@
+version: 1
+checks:
+  - id: api.eac-1
+    criteria: [EAC-1]
+    runner: http
+    paths: [acceptance/api.eac-1.test.mjs]
+    needs: [api]
