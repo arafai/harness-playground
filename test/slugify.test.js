@@ -22,3 +22,14 @@ test("treats non-ASCII characters as non-alphanumeric", () => {
   assert.equal(slugify("Café au lait"), "caf-au-lait");
   assert.equal(slugify("日本"), "");
 });
+
+test("maxLength cuts at the last dash within the limit", () => {
+  assert.equal(slugify("Hello brave new world", { maxLength: 11 }), "hello-brave");
+  assert.equal(slugify("Hello brave new world", { maxLength: 12 }), "hello-brave");
+  assert.equal(slugify("Hello brave", { maxLength: 11 }), "hello-brave");
+});
+
+test("maxLength cuts a long first word", () => {
+  assert.equal(slugify("Supercalifragilistic", { maxLength: 5 }), "super");
+  assert.equal(slugify("Supercalifragilistic day", { maxLength: 5 }), "super");
+});
